@@ -21,6 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       filterChain.doFilter(request, response);
       return;
     }
-    // Do some kind of authentication over here.
+    final String authHeader = authHeaderOpt.get();
+    final String jwt = authHeader.substring(JWT_PREFIX.length()).trim();
   }
 }

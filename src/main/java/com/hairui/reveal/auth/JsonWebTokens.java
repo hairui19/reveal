@@ -21,18 +21,33 @@ public final class JsonWebTokens {
 
   private static final String SECRET_KEY = "337436763979244226452948404D635166546A576E5A7234753778217A25432A";
 
-  /** Parse an input json web token and extra the email address of the user. */
-  public static Optional<String> getUserEmail(String token) {
-    // TODO: revisit here after the encoding is done to see how we can have a better naming
-    return extractClaim(token, Claims::getSubject);
-  }
-
   /** Generate a json web token using the input user details. */
   public static String generateToken(
       UserDetails userDetails
   ) {
     Map<String, Object> extraClaims = new HashMap<>();
     return createJsonWebToken(extraClaims, userDetails);
+  }
+
+  /** Returns trues if the token matches the user details else returns false. */
+  public static boolean isValidToken(String token, UserDetails userDetails) {
+    Optional<String> userEmailOpt = getUserEmail(token);
+    return userEmailOpt
+        .map(userEmail -> userEmail.equals(userDetails.getUsername()) && isTokenExpired(token))
+        .orElse(false);
+  }
+
+  private static Optional<String> getUserEmail(String token) {
+    // TODO: revisit here after the encoding is done to see how we can have a better naming
+    return extractClaim(token, Claims::getSubject);
+  }
+
+  private static boolean isTokenExpired(String token) {
+    // If expiration claim is missing, we assume that this is a brand new token
+    // thus we are returning it is not expired.
+    return extractClaim(token, Claims::getExpiration)
+        .map(expirationDate -> expirationDate.before(new Date()))
+        .orElse(false);
   }
 
   private static String createJsonWebToken(Map<String, Object> extraClaims, UserDetails userDetails) {

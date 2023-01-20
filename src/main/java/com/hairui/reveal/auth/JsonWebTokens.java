@@ -43,11 +43,10 @@ public final class JsonWebTokens {
   }
 
   private static boolean isTokenExpired(String token) {
-    // If expiration claim is missing, we assume that this is a brand new token
-    // thus we are returning it is not expired.
+    // if the expiration claim is missing, we assume that the token is expired.
     return extractClaim(token, Claims::getExpiration)
         .map(expirationDate -> expirationDate.before(new Date()))
-        .orElse(false);
+        .orElse(true);
   }
 
   private static String createJsonWebToken(Map<String, Object> extraClaims, UserDetails userDetails) {

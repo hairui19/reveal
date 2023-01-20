@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import javax.swing.text.html.Option;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,8 @@ public final class JsonWebTokens {
         .orElse(false);
   }
 
-  private static Optional<String> getUserEmail(String token) {
+  /** Returns an optional containing username from the input token. Returns an empty optional if there is no related claim. */
+  public static Optional<String> getUserEmail(String token) {
     // TODO: revisit here after the encoding is done to see how we can have a better naming
     return extractClaim(token, Claims::getSubject);
   }
